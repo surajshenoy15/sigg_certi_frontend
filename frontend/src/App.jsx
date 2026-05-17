@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import {
   uploadFiles, previewCert, generateCerts, sendEmails,
-  getStatus, healthCheck, downloadAllUrl,
+  getStatus, healthCheck, downloadAllUrl, fullUrl,
 } from './api'
 
 const STEPS = [
@@ -72,26 +72,35 @@ export default function App() {
   }, [sending, job])
 
   // ---- Step 1: upload ------------------------------------------------------
-  const onUpload = async () => {
-    if (!templateFile || !recipientsFile) {
-      toast.error('Pick both a template image and a recipient sheet.')
-      return
-    }
-    setUploading(true)
-    try {
-      const data = await uploadFiles(templateFile, recipientsFile)
-      setJob(data)
-      setPreviewName(data.recipients?.[0]?.name || 'Sample Name')
-      // Default coords roughly at center
-      setCoords({ x: 65, y: 56 })
-      toast.success(`Loaded ${data.recipient_count} recipients`)
-      setStep(1)
-    } catch (e) {
-      toast.error(e?.response?.data?.detail || 'Upload failed')
-    } finally {
-      setUploading(false)
-    }
+const onUpload = async () => {
+  if (!templateFile || !recipientsFile) {
+    toast.error('Pick both a template image and a recipient sheet.')
+    return
   }
+
+  setUploading(true)
+
+  try {
+    const data = await uploadFiles(templateFile, recipientsFile)
+
+    setJob({
+      ...data,
+      template_url: data.template_url,
+    })
+
+    setPreviewName(data.recipients?.[0]?.name || 'Sample Name')
+
+    // Default coords roughly at center
+    setCoords({ x: 65, y: 56 })
+
+    toast.success(`Loaded ${data.recipient_count} recipients`)
+    setStep(1)
+  } catch (e) {
+    toast.error(e?.response?.data?.detail || 'Upload failed')
+  } finally {
+    setUploading(false)
+  }
+}
 
   // ---- Step 2: place name on canvas ---------------------------------------
   const stageRef = useRef(null)
@@ -263,7 +272,7 @@ export default function App() {
             <div>
               <div className="canvas-wrap">
                 <div className="canvas-stage" ref={stageRef} onClick={onCanvasClick}>
-                  <img src={`/api/template/${job.job_id}`} alt="template" draggable={false} />
+                  <img src={job.template_url} alt="template" draggable={false} />
                   <div
                     className="canvas-marker"
                     style={{
