@@ -120,50 +120,82 @@ const onUpload = async () => {
   }, [coords, job])
 
   const onPreview = async () => {
-    if (!job) return
-    setPreviewing(true)
-    try {
-      const d = await previewCert({
-        job_id: job.job_id,
-        name_x: pixelCoords.x,
-        name_y: pixelCoords.y,
-        font_size: fontSize,
-        font_color: fontColor,
-        font_family: fontFamily,
-      })
-      // bust cache
-      setPreviewUrl(`${d.preview_url}?t=${Date.now()}`)
-      setPreviewName(d.sample_name)
-      toast.success('Preview rendered')
-    } catch (e) {
-      toast.error(e?.response?.data?.detail || 'Preview failed')
-    } finally {
-      setPreviewing(false)
-    }
+  if (!job) {
+    toast.error('No job found. Please upload again.')
+    return
   }
 
-  // ---- Step 3: bulk generate ----------------------------------------------
-  const onGenerate = async () => {
-    if (!job) return
-    setGenerating(true)
-    try {
-      const d = await generateCerts({
-        job_id: job.job_id,
-        name_x: pixelCoords.x,
-        name_y: pixelCoords.y,
-        font_size: fontSize,
-        font_color: fontColor,
-        font_family: fontFamily,
-      })
-      setGenerated(d)
-      toast.success(`Generated ${d.count} certificates`)
-      setStep(3)
-    } catch (e) {
-      toast.error(e?.response?.data?.detail || 'Generation failed')
-    } finally {
-      setGenerating(false)
-    }
+  setPreviewing(true)
+
+  try {
+    console.log('Preview job:', job)
+
+    const d = await previewCert({
+      job_id: job.job_id,
+      name_x: pixelCoords.x,
+      name_y: pixelCoords.y,
+      font_size: fontSize,
+      font_color: fontColor,
+      font_family: fontFamily,
+    })
+
+    console.log('Preview response:', d)
+
+    // bust cache
+    setPreviewUrl(`${d.preview_url}?t=${Date.now()}`)
+    setPreviewName(d.sample_name)
+    toast.success('Preview rendered')
+  } catch (e) {
+    console.error('Preview failed:', e?.response?.data || e)
+
+    toast.error(
+      e?.response?.data?.detail ||
+      e?.message ||
+      'Preview failed'
+    )
+  } finally {
+    setPreviewing(false)
   }
+}
+
+  // ---- Step 3: bulk generate ----------------------------------------------
+const onGenerate = async () => {
+  if (!job) {
+    toast.error('No job found. Please upload again.')
+    return
+  }
+
+  setGenerating(true)
+
+  try {
+    console.log('Generating with job:', job)
+
+    const d = await generateCerts({
+      job_id: job.job_id,
+      name_x: pixelCoords.x,
+      name_y: pixelCoords.y,
+      font_size: fontSize,
+      font_color: fontColor,
+      font_family: fontFamily,
+    })
+
+    console.log('Generate response:', d)
+
+    setGenerated(d)
+    toast.success(`Generated ${d.count} certificates`)
+    setStep(3)
+  } catch (e) {
+    console.error('Generate failed:', e?.response?.data || e)
+
+    toast.error(
+      e?.response?.data?.detail ||
+      e?.message ||
+      'Generation failed'
+    )
+  } finally {
+    setGenerating(false)
+  }
+}
 
   // ---- Step 4: email -------------------------------------------------------
   const onSend = async () => {
