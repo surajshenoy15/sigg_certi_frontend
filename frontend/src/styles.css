@@ -787,3 +787,18 @@ table.recipients tr:nth-child(even) td { background: var(--paper); }
   animation: spin 0.7s linear infinite;
   display: inline-block;
 }
+
+
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+}

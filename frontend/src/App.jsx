@@ -400,26 +400,32 @@ function MainApp({ route, nav }) {
 
       {/* MASTHEAD */}
       <header className="masthead">
-        <div className="masthead-left">
-          <div className="eyebrow">SIGGRAPH BNMIT · Internal Tool</div>
-          <h1>
-            <span className="roman">The</span> Certificate <em>Press</em>
-          </h1>
-        </div>
+  <div className="masthead-left">
+    <div className="brand-row">
+      <img src="/logo-2.png" alt="SIGGRAPH BNMIT Logo" className="brand-logo" />
 
-        <div className="masthead-right">
-          <div>Vol. I · No. 02</div>
-          <div className="vol">
-            {new Date()
-              .toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-              })
-              .toUpperCase()}
-          </div>
-        </div>
-      </header>
+      <div>
+        <div className="eyebrow">SIGGRAPH BNMIT · Internal Tool</div>
+        <h1>
+          <span className="roman">The</span> Certificate <em>Press</em>
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <div className="masthead-right">
+    <div>Vol. I · No. 02</div>
+    <div className="vol">
+      {new Date()
+        .toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+        .toUpperCase()}
+    </div>
+  </div>
+</header>
 
       {/* TOP NAV */}
       <nav className="topnav">
